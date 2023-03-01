@@ -51,7 +51,7 @@ public class LoginController {
 	    	        	(HttpServletResponse)facesContext.getExternalContext().getResponse(),
 	    	            AuthenticationParameters.withParams().credential(credential));
 	    	if (status.equals(AuthenticationStatus.SUCCESS))
-	    		facesContext.getExternalContext().redirect("cadastro_usuario.xhtml");
+	    		facesContext.getExternalContext().redirect("cadastro_placa.xhtml");
 	    	else if (status.equals(AuthenticationStatus.SEND_FAILURE)) {
 	    		funcionario = new Funcionario();
 	    		try {

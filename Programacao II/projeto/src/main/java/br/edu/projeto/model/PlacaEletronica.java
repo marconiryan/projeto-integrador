@@ -62,4 +62,12 @@ public class PlacaEletronica {
 	public void setComponentesPlaca(List<ComponentePlaca> componentesPlaca) {
 		ComponentesPlaca = componentesPlaca;
 	}
+
+	@Override
+	public String toString() {
+		return "PlacaEletronica [codigo=" + codigo + ", nome=" + nome + ", tipo=" + tipo + ", ComponentesPlaca="
+				+ ComponentesPlaca + "]";
+	}
+	
+	
 }

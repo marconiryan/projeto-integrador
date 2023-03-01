@@ -13,8 +13,8 @@ import javax.inject.Named;
 
 import org.primefaces.PrimeFaces;
 
-import br.edu.projeto.dao.FornecedorDAO;
-import br.edu.projeto.model.Fornecedor;
+import br.edu.projeto.dao.ClienteDAO;
+import br.edu.projeto.model.Cliente;
 
 //Escopo do objeto da classe (Bean)
 //ApplicationScoped é usado quando o objeto é único na aplicação (compartilhado entre usuários), permanece ativo enquanto a aplicação estiver ativa
@@ -27,7 +27,7 @@ import br.edu.projeto.model.Fornecedor;
 @ViewScoped
 //Torna classe disponível na camada de visão (html) - são chamados de Beans ou ManagedBeans (gerenciados pelo JSF/EJB)
 @Named
-public class CadastroFornecedorController implements Serializable {
+public class CadastroClienteController implements Serializable {
 
 	//Anotação que marca atributo para ser gerenciado pelo CDI
 	//O CDI criará uma instância do objeto automaticamente quando necessário
@@ -35,11 +35,11 @@ public class CadastroFornecedorController implements Serializable {
 	private FacesContext facesContext;
 
 	@Inject
-    private FornecedorDAO fornecedorDAO;
+    private ClienteDAO clienteDAO;
 	
-	private Fornecedor fornecedor;
+	private Cliente cliente;
 
-	private List<Fornecedor> listaFornecedors;
+	private List<Cliente> listaClientes;
 	
 	
 	//Anotação que força execução do método após o construtor da classe ser executado
@@ -52,37 +52,28 @@ public class CadastroFornecedorController implements Serializable {
 				this.facesContext.getExternalContext().redirect("login-error.xhtml");
 			} catch (IOException e) {e.printStackTrace();}
     	}
-    	this.listaFornecedors = fornecedorDAO.listarTodos();
+    	this.listaClientes = clienteDAO.listarTodos();
     }
 	
     //Chamado pelo botão novo
 	public void novoCadastro() {
-        this.setFornecedor(new Fornecedor());
+        this.setCliente(new Cliente());
     }
 	
 	//Chamado ao salvar cadastro de usuário (novo ou edição)
-	public void salvar() {
-		Boolean a = this.fornecedorDAO.uniqueFornecedor(this.fornecedor.getCnpj());
-		
-		if(a) {
-			this.facesContext.addMessage(null, new FacesMessage("Verdadeiro"));
-		}
-		else {
-			this.facesContext.addMessage(null, new FacesMessage("Falso"));
-		}
-		
+	public void salvar() {		
     	try {
-	        if (this.fornecedorDAO.uniqueFornecedor(this.fornecedor.getCnpj())) {
-	        	this.fornecedorDAO.salvar(this.fornecedor);
+	        if (this.clienteDAO.uniqueCliente(this.cliente.getCpfCnpj())) {
+	        	this.clienteDAO.salvar(this.cliente);
 	        	this.facesContext.addMessage(null, new FacesMessage("Especificação Criada"));
 	        } else {
-	        	this.fornecedorDAO.atualizar(this.fornecedor);
+	        	this.clienteDAO.atualizar(this.cliente);
 	        	this.facesContext.addMessage(null, new FacesMessage("Especificação Atualizada"));
 	        }
-	        this.listaFornecedors = fornecedorDAO.listarTodos();
+	        this.listaClientes = clienteDAO.listarTodos();
 	        //Atualiza e executa elementos Javascript na tela assincronamente
-		    PrimeFaces.current().executeScript("PF('fornecedorDialog').hide()");
-		    PrimeFaces.current().ajax().update("form:messages", "form:dt-fornecedors");
+		    PrimeFaces.current().executeScript("PF('clienteDialog').hide()");
+		    PrimeFaces.current().ajax().update("form:messages", "form:dt-clientes");
 		    
         } catch (Exception e) {
             String errorMessage = getMensagemErro(e);
@@ -95,16 +86,15 @@ public class CadastroFornecedorController implements Serializable {
 	//Chamado pelo botão remover da tabela
 	public void remover() {
 		try {
-			this.fornecedorDAO.deleteDependencies(this.fornecedor.getCnpj());
-			this.fornecedorDAO.excluir(this.fornecedor);
-			this.listaFornecedors = fornecedorDAO.listarTodos();
-	        this.fornecedor = null;
+			this.clienteDAO.excluir(this.cliente);
+			this.listaClientes = clienteDAO.listarTodos();
+	        this.cliente = null;
 	        this.facesContext.addMessage(null, new FacesMessage("Usuário Removido"));
         } catch (Exception e) {
             String errorMessage = getMensagemErro(e);
             this.facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMessage, null));
         }
-		PrimeFaces.current().ajax().update("form:messages", "form:dt-fornecedors");
+		PrimeFaces.current().ajax().update("form:messages", "form:dt-clientes");
 	}
 	
 	//Chamado pelo botão alterar da tabela
@@ -125,20 +115,20 @@ public class CadastroFornecedorController implements Serializable {
     }
 	
 	//GETs e SETs
-	public Fornecedor getFornecedor() {
-		return fornecedor;
+	public Cliente getCliente() {
+		return cliente;
 	}
 
-	public void setFornecedor(Fornecedor Fornecedor) {
-		this.fornecedor = Fornecedor;
+	public void setCliente(Cliente Cliente) {
+		this.cliente = Cliente;
 	}
 
-	public List<Fornecedor> getListaFornecedors() {
-		return listaFornecedors;
+	public List<Cliente> getListaClientes() {
+		return listaClientes;
 	}
 
-	public void setListaFornecedors(List<Fornecedor> listaFornecedors) {
-		this.listaFornecedors = listaFornecedors;
+	public void setListaClientes(List<Cliente> listaClientes) {
+		this.listaClientes = listaClientes;
 	}
 
 

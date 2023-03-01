@@ -1,11 +1,13 @@
 package br.edu.projeto.dao;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -39,6 +41,28 @@ public class FornecedorDAO implements Serializable{
         return false;
     }
 	
+	public void deleteDependencies(String id) {
+		
+		List<Integer> i = new ArrayList<Integer>();
+		
+		String sql = "Select codigo From public.componente_eletronico where cod_fornecedor = ?";
+		Query query = em.createNativeQuery(sql);
+		query.setParameter(1, id);
+		i = query.getResultList();
+			
+		for(Integer x : i) {
+			sql = "Delete From public.componente_placa where cod_componente = ?";
+			query = em.createNativeQuery(sql);
+			query.setParameter(1, x);
+			query.executeUpdate();
+		}
+		
+		
+		sql = "Delete From public.componente_eletronico where cod_fornecedor = ?";
+		query = em.createNativeQuery(sql);
+		query.setParameter(1, id);
+		query.executeUpdate();
+	}
 	
 	public List<Fornecedor> listarTodos() {
 	    return em.createQuery("SELECT a FROM Fornecedor a ", Fornecedor.class).getResultList();      

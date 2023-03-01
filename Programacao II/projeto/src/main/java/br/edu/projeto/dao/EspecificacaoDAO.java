@@ -1,6 +1,7 @@
 package br.edu.projeto.dao;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateful;
@@ -8,8 +9,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-
+import br.edu.projeto.model.ComponentePlaca;
 import br.edu.projeto.model.Especificacao;
+import br.edu.projeto.model.TipoComponente;
 
 
 //Classe DAO responsável pelas regras de negócio envolvendo operações de persistência de dados
@@ -37,6 +39,29 @@ public class EspecificacaoDAO implements Serializable{
         	return true;
         return false;
     }
+	
+	public void deleteDependencies(Integer id) {
+		
+		List<Integer> i = new ArrayList<Integer>();
+		
+		String sql = "Select codigo From public.componente_eletronico where cod_especificacao = ?";
+		Query query = em.createNativeQuery(sql);
+		query.setParameter(1, id);
+		i = query.getResultList();
+			
+		for(Integer x : i) {
+			sql = "Delete From public.componente_placa where cod_componente = ?";
+			query = em.createNativeQuery(sql);
+			query.setParameter(1, x);
+			query.executeUpdate();
+		}
+		
+		
+		sql = "Delete From public.componente_eletronico where cod_especificacao = ?";
+		query = em.createNativeQuery(sql);
+		query.setParameter(1, id);
+		query.executeUpdate();
+	}
 	
 	
 	public List<Especificacao> listarTodos() {

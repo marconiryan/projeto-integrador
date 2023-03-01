@@ -52,13 +52,11 @@ public class CadastroFuncionarioController implements Serializable {
 	//Anotação que força execução do método após o construtor da classe ser executado
     @PostConstruct
     public void init() {
-    	//Verifica se usuário está autenticado e possui a permissão adequada
-    	//if (!this.facesContext.getExternalContext().isUserInRole("1")) {
-    	//	try {
-		//		this.facesContext.getExternalContext().redirect("login-error.xhtml");
-		//	} catch (IOException e) {e.printStackTrace();}
-    	//}
-    	//Inicializa elementos importantes
+       	if (!this.facesContext.getExternalContext().isUserInRole("1")) {
+    		try {
+				this.facesContext.getExternalContext().redirect("login-error.xhtml");
+			} catch (IOException e) {e.printStackTrace();}
+    	}
     	this.listaFuncionarios = funcionarioDAO.listarTodos();
     }
 	
@@ -69,7 +67,6 @@ public class CadastroFuncionarioController implements Serializable {
 	
 	//Chamado ao salvar cadastro de usuário (novo ou edição)
 	public void salvar() {
-		System.out.println(FuncionarioValido());
         if (FuncionarioValido()) {
         	try {
         		this.funcionario.setSenha(this.passwordHash.generate(this.funcionario.getSenha().toCharArray()));

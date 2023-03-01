@@ -28,7 +28,7 @@ public class PlacaEletronicaDAO implements Serializable{
 	//Cria a conexão e controla a transação com o SGBD (usado pelo Hibernate)
     private EntityManager em;
 	
-	public PlacaEletronica encontrarId(String id) {
+	public PlacaEletronica encontrarId(Integer id) {
         return em.find(PlacaEletronica.class, id);
     }
 	
@@ -43,6 +43,12 @@ public class PlacaEletronicaDAO implements Serializable{
         return false;
     }
 	
+	public void deleteDependencies(Integer id) {
+		String sql = "Delete From public.componente_placa where cod_placa = ?";
+		Query query = em.createNativeQuery(sql, ComponentePlaca.class);
+		query.setParameter(1, id);
+		query.executeUpdate();
+	}
 	
 	public List<PlacaEletronica> listarTodos() {
 		List<PlacaEletronica> r = new ArrayList<PlacaEletronica>();
@@ -57,6 +63,8 @@ public class PlacaEletronicaDAO implements Serializable{
 		}
 		return r;
 	}
+	
+	
 	
 	public void salvar(PlacaEletronica u) {
 		em.persist(u);

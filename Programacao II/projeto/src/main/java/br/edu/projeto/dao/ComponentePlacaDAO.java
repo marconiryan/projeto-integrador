@@ -6,11 +6,13 @@ import java.util.List;
 import javax.ejb.Stateful;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import br.edu.projeto.model.ComponentePlaca;
+import br.edu.projeto.model.TipoComponente;
 
 //Classe DAO responsável pelas regras de negócio envolvendo operações de persistência de dados
 //Indica-se a acriação de um DAO específico para cada Modelo
@@ -28,13 +30,12 @@ public class ComponentePlacaDAO implements Serializable{
         return em.find(ComponentePlaca.class, id);
     }
 	
-	public Boolean uniqueComponentePlaca(String u) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ComponentePlaca> criteria = cb.createQuery(ComponentePlaca.class);
-        Root<ComponentePlaca> componentePlaca = criteria.from(ComponentePlaca.class);
-        criteria.select(componentePlaca);
-        criteria.where(cb.like(componentePlaca.get("nome"), u));
-        if (em.createQuery(criteria).getResultList().isEmpty())
+	public Boolean uniqueComponentePlaca(Integer x, Integer y) {
+		String sql = "Select * From public.componente_placa where cod_componente = ? and cod_placa = ?";
+		Query query = em.createNativeQuery(sql, TipoComponente.class);
+		query.setParameter(1, x);
+		query.setParameter(2, y);
+        if (query.getResultList().isEmpty())
         	return true;
         return false;
     }

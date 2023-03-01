@@ -141,6 +141,7 @@ public class CadastroEspecificacaoController implements Serializable {
 	//Chamado pelo botão remover da tabela
 	public void remover() {
 		try {
+			this.especificacaoDAO.deleteDependencies(this.especificacao.getCodigo());
 			this.especificacaoDAO.excluir(this.especificacao);
 			this.listaEspecificacaos = especificacaoDAO.listarTodos();
 	        this.especificacao = null;

@@ -55,10 +55,13 @@ public class CadastroPlacaEletronicaController implements Serializable {
 	
 	@Inject
 	private ComponenteEletronicoDAO componenteEletronicoDAO;
-	private ComponenteEletronico componenteEletronico;
-	private List<ComponenteEletronico> listaComponenteEletronico;
+	//private ComponenteEletronico componenteEletronico;
+	//private List<ComponenteEletronico> listaComponenteEletronico;
 	
 	List<SelectItem> componentesDropdown;
+	Integer codigoComponenteSelecionado;
+	Integer quantidadeSelecionada;
+	
 	
 	
 	
@@ -89,15 +92,19 @@ public class CadastroPlacaEletronicaController implements Serializable {
         this.setPlacaEletronica(new PlacaEletronica());
     }
 	public void novoCadastroComponentePlaca() {
-        this.setComponentePlaca(new ComponentePlaca());
+		this.setComponentePlaca(new ComponentePlaca());
+		this.componentePlaca.setPlacaEletronica(this.getPlacaEletronica());
+		this.setCodigoComponenteSelecionado(null);
     }
 	
 	//Chamado ao salvar cadastro de placa (novo ou edição)
 	public void salvar() {
         if (placaEletronicaValido()) {
-
         	try {
 		        if (this.placaEletronica.getCodigo() == null) {
+		        	
+		        	
+		        	
 		        	this.placaEletronicaDAO.salvar(this.placaEletronica);
 		        	this.facesContext.addMessage(null, new FacesMessage("Placa Criada"));
 		        } else {
@@ -105,6 +112,7 @@ public class CadastroPlacaEletronicaController implements Serializable {
 		        	this.facesContext.addMessage(null, new FacesMessage("Placa Atualizada"));
 		        }
 		        this.listaPlacaEletronicas = placaEletronicaDAO.listarTodos();
+		        
 		        //Atualiza e executa elementos Javascript na tela assincronamente
 			    PrimeFaces.current().executeScript("PF('placaEletronicaDialog').hide()");
 			    PrimeFaces.current().ajax().update("form:messages", "form:dt-placaEletronicas");
@@ -115,25 +123,32 @@ public class CadastroPlacaEletronicaController implements Serializable {
         }
 	}
 	public void salvarComponentePlaca() {
-		 if (componentePlacaValido()) {
-	        	try {
-			        if (this.componentePlaca.getCodigo() == null) {
-			        	this.componentePlacaDAO.salvar(this.componentePlaca);
-			        	this.facesContext.addMessage(null, new FacesMessage("Componente Adicionado"));
-			        } else {
-			        	
-			        	this.componentePlacaDAO.atualizar(this.componentePlaca);
-			        	this.facesContext.addMessage(null, new FacesMessage("Relacão Atualizada"));
-			        }
-			        this.listaPlacaEletronicas = placaEletronicaDAO.listarTodos();
-			        //Atualiza e executa elementos Javascript na tela assincronamente
-				    PrimeFaces.current().executeScript("PF('componentePlacaDialog').hide()");
-				    PrimeFaces.current().ajax().update("form:messages", "form:dt-componentesEletronicos");
-		        } catch (Exception e) {
-		            String errorMessage = getMensagemErro(e);
-		            this.facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMessage, null));
-		        }
-	        }
+		 if (componentePlacaValido()) { 
+			 try {
+				 if (this.componentePlaca.getCodigo() == null) {
+					 
+					 this.componentePlaca.setComponenteEletronico(this.componenteEletronicoDAO.encontrarId(this.getCodigoComponenteSelecionado()));
+					 this.facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, this.componentePlaca.getComponenteEletronico().getPn() + "", null));
+					 this.componentePlacaDAO.salvar(this.componentePlaca);
+					 this.facesContext.addMessage(null, new FacesMessage("Componente Adicionado"));
+				 } else {
+					 
+					 this.componentePlacaDAO.atualizar(this.componentePlaca);
+					 this.facesContext.addMessage(null, new FacesMessage("Relação Atualizada"));
+				 }
+				 
+				 
+			 } catch (Exception e) {
+				 String errorMessage = getMensagemErro(e);
+				 this.facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMessage, null));
+			 }
+			 
+			 this.listaPlacaEletronicas = placaEletronicaDAO.listarTodos();
+			 PrimeFaces.current().ajax().update("form:messages", "form:dt-placaEletronicas");
+		     PrimeFaces.current().ajax().update("form:messages", ":dialogs:componentes-conteudo-dialog");
+		     PrimeFaces.current().executeScript("PF('componentePlacaDialog').hide()");
+			 
+		 }
 	}
 	
 	
@@ -146,12 +161,17 @@ public class CadastroPlacaEletronicaController implements Serializable {
 		return true;
 	}
 	private boolean componentePlacaValido() {
+		if (this.componentePlaca.getCodigo() == null && !this.componentePlacaDAO.uniqueComponentePlaca(this.getCodigoComponenteSelecionado(), this.componentePlaca.getPlacaEletronica().getCodigo())) {
+			this.facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Este nome de placa já está em uso.", null));
+			return false;
+		}
 		return true;
 	}
 	
 	//Chamado pelo botão remover da tabela
 	public void remover() {
 		try {
+			this.placaEletronicaDAO.deleteDependencies(this.placaEletronica.getCodigo());
 			this.placaEletronicaDAO.excluir(this.placaEletronica);
 			this.listaPlacaEletronicas = placaEletronicaDAO.listarTodos();
 	        this.placaEletronica = null;
@@ -163,13 +183,32 @@ public class CadastroPlacaEletronicaController implements Serializable {
         }
 	}
 	
+	public void removerComponentePlaca() {
+		try {
+			this.componentePlacaDAO.excluir(this.componentePlaca);
+			this.listaPlacaEletronicas = placaEletronicaDAO.listarTodos();
+	        this.componentePlaca = null;
+	        this.facesContext.addMessage(null, new FacesMessage("Componente Removido"));
+	        
+        } catch (Exception e) {
+            String errorMessage = getMensagemErro(e);
+            this.facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMessage, null));
+        }
+		
+		PrimeFaces.current().ajax().update("form:messages", "form:dt-placaEletronicas");
+	     PrimeFaces.current().ajax().update("form:messages", ":dialogs:componentes-conteudo-dialog");		     
+	     PrimeFaces.current().executeScript("PF('componentesDialog').hide()");
+	     PrimeFaces.current().executeScript("PF('componentesDialog').show()");
+	}
+	
 	//Chamado pelo botão alterar da tabela
 	public void alterar() {
 	
 	}
 	
 	public void alterarComponentePlaca() {
-		
+		this.setCodigoComponenteSelecionado(this.componentePlaca.getComponenteEletronico().getCodigo());
+		this.setQuantidadeSelecionada(this.componentePlaca.getComponenteEletronico().getQuantidade());
 	}
 	
 	//Captura mensagem de erro das validações do Hibernate
@@ -219,7 +258,7 @@ public class CadastroPlacaEletronicaController implements Serializable {
 	}
 
 	public ComponentePlaca getComponentePlaca() {
-		return componentePlaca;
+		return componentePlaca;	
 	}
 
 	public void setComponentePlaca(ComponentePlaca componentePlaca) {
@@ -242,22 +281,6 @@ public class CadastroPlacaEletronicaController implements Serializable {
 		this.componenteEletronicoDAO = componenteEletronicoDAO;
 	}
 
-	public ComponenteEletronico getComponenteEletronico() {
-		return componenteEletronico;
-	}
-
-	public void setComponenteEletronico(ComponenteEletronico componenteEletronico) {
-		this.componenteEletronico = componenteEletronico;
-	}
-
-	public List<ComponenteEletronico> getListaComponenteEletronico() {
-		return listaComponenteEletronico;
-	}
-
-	public void setListaComponenteEletronico(List<ComponenteEletronico> listaComponenteEletronico) {
-		this.listaComponenteEletronico = listaComponenteEletronico;
-	}
-
 	public List<SelectItem> getComponentesDropdown() {
 		return componentesDropdown;
 	}
@@ -265,5 +288,24 @@ public class CadastroPlacaEletronicaController implements Serializable {
 	public void setComponentesDropdown(List<SelectItem> componentesDropdown) {
 		this.componentesDropdown = componentesDropdown;
 	}
+
+	public Integer getCodigoComponenteSelecionado() {
+		return codigoComponenteSelecionado;
+	}
+
+	public void setCodigoComponenteSelecionado(Integer codigoComponenteSelecionado) {
+		this.codigoComponenteSelecionado = codigoComponenteSelecionado;
+	}
+
+	public Integer getQuantidadeSelecionada() {
+		return quantidadeSelecionada;
+	}
+
+	public void setQuantidadeSelecionada(Integer quantidadeSelecionada) {
+		this.quantidadeSelecionada = quantidadeSelecionada;
+	}
+
+	
+	
 	
 }

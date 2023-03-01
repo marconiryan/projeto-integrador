@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Email;
 
 
 
@@ -13,9 +14,10 @@ public class Cliente {
 	
     @Id
     @CPFCNPJ
-    @Column(name = "cpf_cnpjJ")
-    private String cpfCpnj;
-
+    @Column(name = "cpf_cnpj")
+    private String cpfCnpj;
+    
+    @Email
     @Column(name = "email")
     private String email;
 
@@ -28,15 +30,12 @@ public class Cliente {
     @Column(name = "telefone")
     private String telefone;
 
-    @Column(name = "senha")
-    private String senha;
-
-    public String getCpfCpnj() {
-        return cpfCpnj;
+    public String getCpfCnpj() {
+        return cpfCnpj;
     }
 
-    public void setCpfCpnj(String cpfCpnj) {
-        this.cpfCpnj = cpfCpnj;
+    public void setCpfCnpj(String cpfCnpj) {
+        this.cpfCnpj = cpfCnpj;
     }
 
     public String getEmail() {
@@ -69,14 +68,6 @@ public class Cliente {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
     }
 
 }

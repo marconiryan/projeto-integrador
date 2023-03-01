@@ -152,6 +152,7 @@ public class CadastroComponenteEletronicoController implements Serializable {
 	//Chamado pelo botão remover da tabela
 	public void remover() {
 		try {
+			this.componenteEletronicoDAO.deleteDependencies(this.componenteEletronico.getCodigo());
 			this.componenteEletronicoDAO.excluir(this.componenteEletronico);
 			this.listaComponenteEletronicos = componenteEletronicoDAO.listarTodos();
 	        this.componenteEletronico = null;

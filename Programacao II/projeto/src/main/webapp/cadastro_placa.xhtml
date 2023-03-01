@@ -27,7 +27,7 @@
 	                        <p:inputText id="nome" value="#{cadastroPlacaEletronicaController.placaEletronica.nome}" required="true" />
 	                    </div>
 	                    <div class="field">
-	                        <p:outputLabel for="tipo">Tipo</p:outputLabel>
+	                        <p:outputLabel for="tipo">Descrição</p:outputLabel>
 	                        <p:inputText id="tipo" value="#{cadastroPlacaEletronicaController.placaEletronica.tipo}" required="true"/>
 	                    </div>
 	                    
@@ -78,7 +78,7 @@
 				                    <p:resetInput target=":dialogs:componentePlaca-conteudo-dialog" />
 				                </p:commandButton>
 				                
-				                <p:commandButton style = "margin:2px" class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" oncomplete="PF('removerPlacaEletronicaDialog').show()">
+				                <p:commandButton style = "margin:2px" class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" oncomplete="PF('removerComponentePlacaDialog').show()">
 				                    <f:setPropertyActionListener value="#{comp}" target="#{cadastroPlacaEletronicaController.componentePlaca}" />
 				                </p:commandButton>
 				            </p:column>
@@ -87,7 +87,7 @@
 					</div>
             	</p:outputPanel>
         		<f:facet name="footer">
-	                <p:commandButton value="Novo" icon="pi pi-plus"  oncomplete="PF('componentesPlacaDialog').show()" actionListener="#{cadastroPlacaEletronicaController.salvarComponentePlaca()}" update="componentes-conteudo-dialog dialogs:messages"  />
+	                <p:commandButton value="Novo" icon="pi pi-plus"  oncomplete="PF('componentePlacaDialog').show()" actionListener="#{cadastroPlacaEletronicaController.novoCadastroComponentePlaca()}" update="componentePlaca-conteudo-dialog dialogs:messages"  />
 	            </f:facet>
             </p:dialog>
             
@@ -97,7 +97,7 @@
 	                <p:outputPanel rendered="#{not empty cadastroPlacaEletronicaController.componentePlaca}">
 	                    <div class="field">
 	                    	<p:outputLabel for="componente-cp" value="Componente: "/>
-				            <p:selectOneMenu  id="componente-cp" value="#{cadastroPlacaEletronicaController.componentePlaca.componenteEletronico.codigo}" style="width:150px">
+				            <p:selectOneMenu  id="componente-cp" value="#{cadastroPlacaEletronicaController.codigoComponenteSelecionado}" style="width:150px">
 				                <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
 				                <f:selectItems value="#{cadastroPlacaEletronicaController.componentesDropdown}"/>
 				            </p:selectOneMenu>
@@ -110,17 +110,17 @@
 	            </p:outputPanel>
 	
 	            <f:facet name="footer">
-	                <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{cadastroPlacaEletronicaController.salvarComponentePlaca}"
-	                    update="componentes-conteudo-dialog dialogs:messages" process="placaEletronica-conteudo-dialog @this" />
+	                <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{cadastroPlacaEletronicaController.salvarComponentePlaca()}"
+	                    update="componentePlaca-conteudo-dialog dialogs:messages" process="componentePlaca-conteudo-dialog @this" />
 	                <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('componentePlacaDialog').hide()" class="ui-button-secondary" type="button" />
 	            </f:facet>
 	        </p:dialog>
 
-	        <p:confirmDialog widgetVar="removerPlacaEletronicaDialog" showEffect="fade" width="300"
-	            message="Desejar remover este usuário?" header="Confirm" severity="warn">
-	            <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{cadastroPlacaEletronicaController.remover}"
-	                process="@this" oncomplete="PF('removerPlacaEletronicaDialog').hide()" />
-	            <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('removerPlacaEletronicaDialog').hide()" />
+	        <p:confirmDialog widgetVar="removerComponentePlacaDialog" showEffect="fade" width="300"
+	            message="Desejar remover esta Relação?" header="Confirm" severity="warn">
+	            <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{cadastroPlacaEletronicaController.removerComponentePlaca()}"
+	                process="@this" oncomplete="PF('removerComponentePlacaDialog').hide()" />
+	            <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('removerComponentePlacaDialog').hide()" />
 	        </p:confirmDialog>
             
             
@@ -156,7 +156,7 @@
 	            <p:column headerText="Nome" sortBy="#{us.nome}">
 	                <h:outputText value="#{us.nome}" />
 	            </p:column>
-	             <p:column headerText="Tipo">
+	             <p:column headerText="Descrição">
 	                <h:outputText value="#{us.tipo}" />
 	             </p:column>
 	             <p:column>

@@ -18,7 +18,6 @@ public class Fornecedor {
 	@NotEmpty()
     @NotNull()
 	@Email()
-	@CPFCNPJ
     @Column(name = "email")
     private String email;
     
