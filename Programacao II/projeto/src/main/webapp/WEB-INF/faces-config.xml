@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!-- Arquivo de configuração e ativação do JSF -->
+<!-- O JSF é responsável por simplificar (automatizar) a comunicação entre servidor e cliente, facilitando o trabalho do programador -->
+<faces-config version="2.3"
+    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://xmlns.jcp.org/xml/ns/javaee
+        http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd">
+</faces-config>

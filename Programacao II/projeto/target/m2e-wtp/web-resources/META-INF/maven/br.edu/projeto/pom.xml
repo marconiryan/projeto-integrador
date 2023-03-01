@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Arquivo de configuração e ativação do Maven -->
+<!-- Maven é responsável por baixar todas as dependências do projeto, verificar compatibilidade entre versões e gerar o artefato que será executado no servidor de aplicação Web -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+	<!-- Nome completo da aplicação (indicado usar mesma organização de pastas) -->
+    <groupId>br.edu</groupId>
+    <!-- Nome da aplicação (localhost:8080/projeto) -->
+    <artifactId>projeto</artifactId>
+    <!-- Versão da Aplicação (retira-se o SNAPSHOT ao colocar sistema em produção) -->
+    <version>0.0.1-SNAPSHOT</version>
+    <!-- Formato do artefato -->
+    <packaging>war</packaging>
+    <name>Projeto para o CCR Programação II</name>
+    <description>Esta aplicação serve como modelo de aprendizado para o desenvolvimento de aplicações Web</description>
+
+	<!-- Descrição da licença de uso -->
+    <url>https://cc.uffs.edu.br</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <distribution>repo</distribution>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
+
+	<!-- Configurações de dependências do próprio Maven -->
+    <properties>
+    	<!-- Encoding a ser usado nos caracteres da aplicação -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Versões do arquivos de dependências do servidor de aplicação -->
+        <version.wildfly.maven.plugin>1.0.2.Final</version.wildfly.maven.plugin>
+        <version.jboss.bom>8.2.1.Final</version.jboss.bom>
+
+        <!-- Versões de plugins usados pelo Maven -->
+        <version.compiler.plugin>3.1</version.compiler.plugin>
+        <version.surefire.plugin>2.16</version.surefire.plugin>
+        <version.war.plugin>3.3.1</version.war.plugin>
+
+        <!-- Versão do Java usado pelo Maven para compilar o projeto -->
+        <maven.compiler.target>1.17</maven.compiler.target>
+        <maven.compiler.source>1.17</maven.compiler.source>
+    </properties>
+
+	<!-- Indica dependências do Projeto fornecidas pelo servidor de aplicação -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.wildfly.bom</groupId>
+                <artifactId>jboss-javaee-7.0-with-tools</artifactId>
+                <version>${version.jboss.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.bom</groupId>
+                <artifactId>jboss-javaee-7.0-with-hibernate</artifactId>
+                <version>${version.jboss.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+	<!-- Demais dependências do projeto -->
+	<!-- O escopo provided indica que a dependência será fornecida pelo servidor de aplicação quando esta estiver em execução -->
+    <dependencies>
+    
+        <!-- CDI API, usado na injeção de dependências (geração de objetos) -->
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Jakarta Security API, usado na autenticação/autorização de usuários -->
+        <dependency>
+	        <groupId>javax</groupId>
+	        <artifactId>javaee-web-api</artifactId>
+	        <version>8.0</version>
+	        <scope>provided</scope>
+	    </dependency>
+
+        <!-- Common Annotations API (JSR-250), fornece o uso de anotações para o Java -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.annotation</groupId>
+            <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JPA API, fornece a implementação Hibernate como OCR -->
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- EJB API, fornece escopos EJB e outras anotações relevantes -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.ejb</groupId>
+            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JSR-303 (Bean Validation) Implementation -->
+        <!-- Fornece anotações de validação como @Email -->
+        <!-- Inclui Hibernate Validator API -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- JSF API, framework de Back-end -->
+        <dependency>
+		    <groupId>javax.faces</groupId>
+		    <artifactId>javax.faces-api</artifactId>
+		    <version>2.3</version>
+		    <scope>provided</scope>
+		</dependency>
+
+        <!-- Annotation processor para gerar modelos no hibernate com typesafe criteria queries -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Annotation processor para indicar erros de compilação ao usar incorretamente anotação de validação do Hibernate -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator-annotation-processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Primefaces API, framework de Front-end --> 
+        <dependency>
+		    <groupId>org.primefaces</groupId>
+		    <artifactId>primefaces</artifactId>
+		    <version>12.0.0</version>
+		</dependency>
+    </dependencies>
+
+	<!-- Configurações de Build usadas pelo Maven na construção do artefato -->
+    <build>
+        <!-- Nome final do artefato (Maven adiciona automaticamente a versão no final) -->
+        <!-- Este é o nome do arquivo gerado que será depois inserido no servidor de aplicação -->
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${version.war.plugin}</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

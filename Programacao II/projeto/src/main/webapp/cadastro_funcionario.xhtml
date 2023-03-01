@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Define bibliotecas(tags) usadas na página -->
+<!-- Pode se usar elementos HTML padrão misturados com os JSF e Primefaces sem problemas -->
+<!-- As tags ui, h e f são do JSF -->
+<!-- ui são para elementos de organização (templates) e automatização (laços e condicionais) -->
+<!-- h são reimplementações de elementos HTML padrão que fornecem algumas funções/facilidades adicionais -->
+<!-- f são para comunicação/transmição de parâmetros entre páginas e para controle de requisições AJAX -->
+<!-- A tag p são do Primefaces, ela reimplementa as tags h com ainda mais funcionalidades e fornece tags adicionais com recursos avançados de Javascript e CSS embutidos -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/templates/inside.xhtml">
+    
+    <!-- Usado para definir uso do Template -->
+    <!-- O template só serve para uma melhor organização do código e para evitar a repetição de código -->
+    <ui:define name="content">
+    
+    
+    	<!-- Define formulário para Dialogs (elementos estilo Pop-up) -->
+    	<!-- Lembre-se que o uso de formulários só não é necessário para elementos que são estáticos (sem ação, animação, conteúdo dinâmico) -->     
+        <h:form id="dialogs">
+        	<p:growl id="messages"/>
+	        <p:dialog header="Novo Funcionario" showEffect="fade" modal="true" widgetVar="funcionarioDialog" responsive="true">   
+	            <p:outputPanel id="funcionario-conteudo-dialog" class="ui-fluid">
+	                <p:outputPanel rendered="#{not empty cadastroFuncionarioController.funcionario}">
+	                    <div class="field">
+	                        <p:outputLabel for="nome">Nome</p:outputLabel>
+	                        <p:inputText id="nome" value="#{cadastroFuncionarioController.funcionario.nome}" required="true" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="email">E-mail</p:outputLabel>
+	                        <p:inputText id="email" value="#{cadastroFuncionarioController.funcionario.email}" required="true"/>
+	                    </div>
+	                     <div class="field">
+	                        <p:outputLabel for="telefone">Telefone</p:outputLabel>
+	                        <p:inputText id="telefone" value="#{cadastroFuncionarioController.funcionario.telefone}" required="true"/>
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="tipo">Tipo</p:outputLabel>
+	                        <p:inputText id="tipo" value="#{cadastroFuncionarioController.funcionario.tipo}" required="true"/>
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="senha">Senha</p:outputLabel>
+	                        <p:password id="senha" value="#{cadastroFuncionarioController.funcionario.senha}" toggleMask="true" redisplay="true"
+	                        feedback="true" weakLabel="Fraca" goodLabel="Boa" strongLabel="Forte" validatorMessage="Informe a senha"/>
+	                    </div>
+	                    
+	                </p:outputPanel>
+	            </p:outputPanel>
+	
+	            <f:facet name="footer">
+	                <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{cadastroFuncionarioController.salvar}"
+	                    update="funcionario-conteudo-dialog dialogs:messages" process="funcionario-conteudo-dialog @this" />
+	                <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('funcionarioDialog').hide()" class="ui-button-secondary" type="button" />
+	            </f:facet>
+	        </p:dialog>
+
+	        <p:confirmDialog widgetVar="removerFuncionarioDialog" showEffect="fade" width="300"
+	            message="Desejar remover este usuário?" header="Confirm" severity="warn">
+	            <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{cadastroFuncionarioController.remover}"
+	                process="@this" oncomplete="PF('removerFuncionarioDialog').hide()" />
+	            <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('removerFuncionarioDialog').hide()" />
+	        </p:confirmDialog>
+		
+        </h:form>     
+        
+        <!-- Define formulário principal -->  
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+            
+            <p:toolbar>
+	            <p:toolbarGroup>
+	                <p:commandButton value="Novo" icon="pi pi-plus" actionListener="#{cadastroFuncionarioController.novoCadastro}"
+	                    update=":dialogs:funcionario-conteudo-dialog" oncomplete="PF('funcionarioDialog').show()"
+	                    styleClass="ui-button-success" style="margin-rght: .5rem">
+	                    <p:resetInput target=":dialogs:funcionario-conteudo-dialog" />
+	                </p:commandButton>
+	            </p:toolbarGroup>
+	        </p:toolbar>
+	
+	        <p:dataTable id="dt-funcionarios" widgetVar="dtFuncionarios" var="us" value="#{cadastroFuncionarioController.listaFuncionarios}">
+	            <f:facet name="header">
+	                <div>
+	                    <span style="font-weight: bold">Funcionarios</span>
+	                </div>
+	            </f:facet>
+	
+	            <p:column headerText="Codigo" sortBy="#{us.codigo}">
+	                <h:outputText value="#{us.codigo}" />
+	            </p:column>
+	            <p:column headerText="Nome" sortBy="#{us.nome}">
+	                <h:outputText value="#{us.nome}" />
+	            </p:column>
+	            <p:column headerText="E-mail">
+	                <h:outputText value="#{us.email}" />
+	            </p:column>
+	            <p:column headerText="Telefone" sortBy="#{us.telefone}">
+	                <h:outputText value="#{us.telefone}" />
+	            </p:column>
+	             <p:column headerText="Tipo">
+	                <h:outputText value="#{us.tipo}" />
+	            </p:column>
+	            
+
+	            <p:column>
+	            	<!-- Cuidado com botões que usam AJAX -->
+	            	<!-- process indica qual elemento do formulário será processado (padrão é todo o formulário), @this é só o próprio elemento -->
+	            	<!-- update informa qual elemento será atualizado (renderizado novamente) ao finalizar ação -->
+	            	<!-- é possível disparar ações para diversos eventos Javascript, deve-se cuidar a ordem da resolução dos mesmos -->
+	            	<!-- como regra geral a prioridade de processamento é a seguinte (eventos on... - oncomplete, onclick, onblur, actionListener, action, oncomplete no final) -->
+	            	<!-- PF é usado para chamada de função Javascript de algum elemento do Primefaces -->
+	                <p:commandButton icon="pi pi-pencil" update=":dialogs:funcionario-conteudo-dialog" 
+	                    oncomplete="PF('funcionarioDialog').show()" action="#{cadastroFuncionarioController.alterar}"
+	                    styleClass="edit-button rounded-button ui-button-success" process="@this">
+	                    <f:setPropertyActionListener value="#{us}" target="#{cadastroFuncionarioController.funcionario}" />
+	                    <p:resetInput target=":dialogs:funcionario-conteudo-dialog" />
+	                </p:commandButton>
+	                <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
+	                                 process="@this" oncomplete="PF('removerFuncionarioDialog').show()">
+	                    <f:setPropertyActionListener value="#{us}" target="#{cadastroFuncionarioController.funcionario}" />
+	                </p:commandButton>
+	            </p:column>
+	
+	        </p:dataTable>
+	    </h:form>
+    
+    </ui:define>
+</ui:composition>

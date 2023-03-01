@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Define bibliotecas(tags) usadas na página -->
+<!-- Pode se usar elementos HTML padrão misturados com os JSF e Primefaces sem problemas -->
+<!-- As tags ui, h e f são do JSF -->
+<!-- ui são para elementos de organização (templates) e automatização (laços e condicionais) -->
+<!-- h são reimplementações de elementos HTML padrão que fornecem algumas funções/facilidades adicionais -->
+<!-- f são para comunicação/transmição de parâmetros entre páginas e para controle de requisições AJAX -->
+<!-- A tag p são do Primefaces, ela reimplementa as tags h com ainda mais funcionalidades e fornece tags adicionais com recursos avançados de Javascript e CSS embutidos -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/templates/inside.xhtml">
+    
+    <!-- Usado para definir uso do Template -->
+    <!-- O template só serve para uma melhor organização do código e para evitar a repetição de código -->
+    <ui:define name="content">
+        <h:form id="dialogs">
+        	<p:growl id="messages"/>
+	        <p:dialog header="Novo PlacaEletronica" showEffect="fade" modal="true" widgetVar="placaEletronicaDialog" responsive="true">   
+	            <p:outputPanel id="placaEletronica-conteudo-dialog" class="ui-fluid">
+	                <p:outputPanel rendered="#{not empty cadastroPlacaEletronicaController.placaEletronica}">
+	                    <div class="field">
+	                        <p:outputLabel for="nome">Nome</p:outputLabel>
+	                        <p:inputText id="nome" value="#{cadastroPlacaEletronicaController.placaEletronica.nome}" required="true" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="tipo">Tipo</p:outputLabel>
+	                        <p:inputText id="tipo" value="#{cadastroPlacaEletronicaController.placaEletronica.tipo}" required="true"/>
+	                    </div>
+	                    
+	                </p:outputPanel>
+	            </p:outputPanel>
+	
+	            <f:facet name="footer">
+	                <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{cadastroPlacaEletronicaController.salvar}"
+	                    update="placaEletronica-conteudo-dialog dialogs:messages" process="placaEletronica-conteudo-dialog @this" />
+	                <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('placaEletronicaDialog').hide()" class="ui-button-secondary" type="button" />
+	            </f:facet>
+	        </p:dialog>
+
+	        <p:confirmDialog widgetVar="removerPlacaEletronicaDialog" showEffect="fade" width="300"
+	            message="Desejar remover este usuário?" header="Confirm" severity="warn">
+	            <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{cadastroPlacaEletronicaController.remover}"
+	                process="@this" oncomplete="PF('removerPlacaEletronicaDialog').hide()" />
+	            <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('removerPlacaEletronicaDialog').hide()" />
+	        </p:confirmDialog>
+	        
+       		<p:dialog header="Componentes" widgetVar="componentesDialog" height="400" width="650" showEffect="fade" modal="true">
+            	<p:outputPanel id="componentes-conteudo-dialog"  class="ui-fluid">
+          			<p:growl id="messages-comp" showDetail="true" />
+	                <div class="card ui-g">
+					    <p:dataTable id="dt-componentesEletronicos" var="comp"   value="#{cadastroPlacaEletronicaController.placaEletronica.componentesPlaca}"  class = "align-center">
+					        <p:column headerText="PN">
+					            <h:outputText value="#{comp.componenteEletronico.pn}" />
+					        </p:column>	
+					
+							<p:column headerText="Tipo">
+					            <h:outputText value="#{comp.componenteEletronico.tipoComponente.nome}" />
+					            <h:outputText value=" " />
+					            <h:outputText value="#{comp.componenteEletronico.tipoComponente.encapsulamento}" />
+					        </p:column>
+					
+					        <p:column headerText="Especificação">
+					            <h:outputText value="#{comp.componenteEletronico.especificacao.valor}" />
+					            <h:outputText value="#{comp.componenteEletronico.especificacao.unidadeMedida}" />
+					        </p:column>
+					
+					        <p:column headerText="Quantidade">
+					            <h:outputText value="#{comp.quantidade}" />
+					        </p:column>
+					        
+					        <p:column>
+				                <p:commandButton style = "margin:2px" class="edit-button rounded-button ui-button-warning" icon="pi pi-pencil" update=":dialogs:componentePlaca-conteudo-dialog" oncomplete="PF('componentePlacaDialog').show()" action="#{cadastroPlacaEletronicaController.alterarComponentePlaca}"  process="@this">
+				                    <f:setPropertyActionListener value="#{comp}" target="#{cadastroPlacaEletronicaController.componentePlaca}" />
+				                    <p:resetInput target=":dialogs:componentePlaca-conteudo-dialog" />
+				                </p:commandButton>
+				                
+				                <p:commandButton style = "margin:2px" class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this" oncomplete="PF('removerPlacaEletronicaDialog').show()">
+				                    <f:setPropertyActionListener value="#{comp}" target="#{cadastroPlacaEletronicaController.componentePlaca}" />
+				                </p:commandButton>
+				            </p:column>
+					        
+					    </p:dataTable>
+					</div>
+            	</p:outputPanel>
+        		<f:facet name="footer">
+	                <p:commandButton value="Novo" icon="pi pi-plus"  oncomplete="PF('componentesPlacaDialog').show()" actionListener="#{cadastroPlacaEletronicaController.salvarComponentePlaca()}" update="componentes-conteudo-dialog dialogs:messages"  />
+	            </f:facet>
+            </p:dialog>
+            
+            
+            <p:dialog header="Componente para Placa" showEffect="fade" modal="true" widgetVar="componentePlacaDialog" responsive="true">   
+	            <p:outputPanel id="componentePlaca-conteudo-dialog" class="ui-fluid">
+	                <p:outputPanel rendered="#{not empty cadastroPlacaEletronicaController.componentePlaca}">
+	                    <div class="field">
+	                    	<p:outputLabel for="componente-cp" value="Componente: "/>
+				            <p:selectOneMenu  id="componente-cp" value="#{cadastroPlacaEletronicaController.componentePlaca.componenteEletronico.codigo}" style="width:150px">
+				                <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+				                <f:selectItems value="#{cadastroPlacaEletronicaController.componentesDropdown}"/>
+				            </p:selectOneMenu>
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="quantidade-cp">Quantidade</p:outputLabel>
+	                        <p:inputText id="quantidade-cp" value="#{cadastroPlacaEletronicaController.componentePlaca.quantidade}" required="true" />
+	                    </div>       
+	                </p:outputPanel>
+	            </p:outputPanel>
+	
+	            <f:facet name="footer">
+	                <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{cadastroPlacaEletronicaController.salvarComponentePlaca}"
+	                    update="componentes-conteudo-dialog dialogs:messages" process="placaEletronica-conteudo-dialog @this" />
+	                <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('componentePlacaDialog').hide()" class="ui-button-secondary" type="button" />
+	            </f:facet>
+	        </p:dialog>
+
+	        <p:confirmDialog widgetVar="removerPlacaEletronicaDialog" showEffect="fade" width="300"
+	            message="Desejar remover este usuário?" header="Confirm" severity="warn">
+	            <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{cadastroPlacaEletronicaController.remover}"
+	                process="@this" oncomplete="PF('removerPlacaEletronicaDialog').hide()" />
+	            <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('removerPlacaEletronicaDialog').hide()" />
+	        </p:confirmDialog>
+            
+            
+       	</h:form>     
+        
+        
+        
+        <!-- Define formulário principal -->  
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+            
+	
+	        <p:dataTable id="dt-placaEletronicas" widgetVar="dtPlacaEletronicas" rowKey = "#{us.codigo}" var="us" value="#{cadastroPlacaEletronicaController.listaPlacaEletronicas}">
+	            <f:facet name="header">
+	                <div style = " 
+	                	    display: flex;
+						    align-items: center;
+						    justify-content: space-between;
+						    flex-wrap: wrap;
+	                ">
+	                    <span style="font-weight: bold">Placas Eletronicas: </span>
+	                    <span style="text-align:right">
+	                    	<p:commandButton icon="pi pi-plus" actionListener="#{cadastroPlacaEletronicaController.novoCadastro}" update=":dialogs:placaEletronica-conteudo-dialog" oncomplete="PF('placaEletronicaDialog').show()" styleClass="ui-button-success align-right" style="font-size: 1rem; margin:2px">
+				            	<p:resetInput target=":dialogs:placaEletronica-conteudo-dialog" />
+				        	</p:commandButton>
+				        </span>
+	                </div>
+	            </f:facet>
+	
+	            <p:column headerText="Codigo" sortBy="#{us.codigo}">
+	                <h:outputText value="#{us.codigo}" />
+	            </p:column>
+	            <p:column headerText="Nome" sortBy="#{us.nome}">
+	                <h:outputText value="#{us.nome}" />
+	            </p:column>
+	             <p:column headerText="Tipo">
+	                <h:outputText value="#{us.tipo}" />
+	             </p:column>
+	             <p:column>
+	            	<!-- Cuidado com botões que usam AJAX -->
+	            	<!-- process indica qual elemento do formulário será processado (padrão é todo o formulário), @this é só o próprio elemento -->
+	            	<!-- update informa qual elemento será atualizado (renderizado novamente) ao finalizar ação -->
+	            	<!-- é possível disparar ações para diversos eventos Javascript, deve-se cuidar a ordem da resolução dos mesmos -->
+	            	<!-- como regra geral a prioridade de processamento é a seguinte (eventos on... - oncomplete, onclick, onblur, actionListener, action, oncomplete no final) -->
+	            	<!-- PF é usado para chamada de função Javascript de algum elemento do Primefaces -->
+	                <p:commandButton style = "margin:2px" class="edit-button rounded-button ui-button-success" icon="pi pi-pencil" update=":dialogs:placaEletronica-conteudo-dialog" oncomplete="PF('placaEletronicaDialog').show()" action="#{cadastroPlacaEletronicaController.alterar}"  process="@this">
+	                    <f:setPropertyActionListener value="#{us}" target="#{cadastroPlacaEletronicaController.placaEletronica}" />
+	                    <p:resetInput target=":dialogs:placaEletronica-conteudo-dialog" />
+	                </p:commandButton>
+	                
+	                <p:commandButton style = "margin:2px" class="ui-button-warning rounded-button" icon="pi pi-trash" process="@this" oncomplete="PF('removerPlacaEletronicaDialog').show()">
+	                    <f:setPropertyActionListener value="#{us}" target="#{cadastroPlacaEletronicaController.placaEletronica}" />
+	                </p:commandButton>
+	                
+	                <p:commandButton style = "margin:2px" class="rounded-button ui-button" icon="pi pi-link" update=":dialogs:componentes-conteudo-dialog" oncomplete="PF('componentesDialog').show()"  process="@this">
+	                	<f:setPropertyActionListener value="#{us}" target="#{cadastroPlacaEletronicaController.placaEletronica}" />
+	                	 <p:resetInput target=":dialogs:componentes-conteudo-dialog" />
+	                </p:commandButton>
+	            </p:column>
+	
+	        </p:dataTable>
+	    </h:form>
+    
+    </ui:define>
+</ui:composition>

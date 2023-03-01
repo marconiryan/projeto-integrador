@@ -1,0 +1,60 @@
+
+<!-- Página de template de exemplo -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+<!-- Indica-se importar scripts Javascript e arquivos CSS externos dentro do head de um template -->
+<h:head>
+	<!-- Nome que aparecerá na aba do navegador para o usuário -->
+    <title>projeto</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- <h:outputStylesheet name="css/screen.css" />  -->
+</h:head>
+<h:body>
+    <div id="container">
+    
+    	<div class="card">
+	    <h:form>
+	        <p:growl id="messages"/>
+	
+	        <p:menubar>
+	        
+	        	<p:submenu label="Componentes" icon="pi pi-fw pi-th-large">
+	                <p:menuitem value="Componentes" action="#{facesContext.getExternalContext().redirect('cadastro_componente.xhtml')}" icon="pi pi-fw pi-cog"/>
+	                <p:menuitem value="Tipos" action="#{facesContext.getExternalContext().redirect('cadastro_tipo_componente.xhtml')}" icon="pi pi-fw pi-link"/>
+					<p:menuitem value="Especificações" action="#{facesContext.getExternalContext().redirect('cadastro_especificacao.xhtml')}" icon="pi pi-fw pi-sliders-h"/>
+	            </p:submenu>
+	            
+	            <p:submenu label="Usuarios" icon="pi pi-fw pi-users">
+	            	<p:menuitem value="Clientes" action="#{facesContext.getExternalContext().redirect('cadastro_usuario.xhtml')}" icon="pi pi-fw pi-user"/>
+	                <p:menuitem value="Funcionarios" action="#{facesContext.getExternalContext().redirect('cadastro_funcionario.xhtml')}" icon="pi pi-fw pi-wrench"/>
+	                <p:menuitem value="Fornecedores" action="#{facesContext.getExternalContext().redirect('cadastro_fornecedor.xhtml')}" icon="pi pi-fw pi-truck"/>
+	            </p:submenu>
+		
+				<p:menuitem value="Fornecedores" action="#{facesContext.getExternalContext().redirect('cadastro_placa.xhtml')}" icon="pi pi-fw pi-truck"/>
+	            
+	            
+	            
+	            <f:facet name="options">
+	                <p:button value="Logout" action="#{loginController.logout}" icon="pi pi-fw pi-sign-out" styleClass="ui-button-info"/>
+	            </f:facet>
+	        </p:menubar>
+	    </h:form>
+	</div>
+    
+    
+        <div id="content">
+            <ui:insert name="content">
+                    <!-- Conteúdo das páginas que usarão o template será inserido aqui -->
+         </ui:insert>
+        </div>
+        <div id="footer">
+
+        </div>
+    </div>
+</h:body>
+</html>
